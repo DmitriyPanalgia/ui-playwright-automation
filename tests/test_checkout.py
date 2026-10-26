@@ -1,0 +1,73 @@
+from playwright.sync_api import expect
+import pytest
+
+
+
+def test_checkout_form_visible(authenticated_inventory_page,
+                               cart_page_object,
+                               checkout_page_object):
+
+    authenticated_inventory_page.add_product_to_cart("Sauce Labs Backpack")
+    cart_page_object.open()
+    cart_page_object.checkout()
+
+
+    expect(checkout_page_object.first_name).to_be_visible()
+    expect(checkout_page_object.last_name).to_be_visible()
+    expect(checkout_page_object.postal_code).to_be_visible()
+
+
+@pytest.mark.parametrize(
+    "first_name, last_name, postal_code, expected_error_message",
+    [
+        ("","Ivanov","12345","Error: First Name is required"),
+        ("Dima", "", "12345", "Error: Last Name is required"),
+        ("Dima", "Ivanov", "", "Error: Postal Code is required")
+    ]
+)
+def test_checkout_required_fields_validation(authenticated_inventory_page,
+                                     cart_page_object,
+                                     checkout_page_object,
+                                     first_name,
+                                     last_name,
+                                     postal_code,
+                                     expected_error_message):
+
+    authenticated_inventory_page.add_product_to_cart("Sauce Labs Backpack")
+    cart_page_object.open()
+    cart_page_object.checkout()
+
+    checkout_page_object.enter_first_name(first_name)
+    checkout_page_object.enter_last_name(last_name)
+    checkout_page_object.enter_postal_code(postal_code)
+    checkout_page_object.click_continue()
+
+    expect(checkout_page_object.get_error_message()).to_have_text(expected_error_message)
+
+def test_successful_checkout(authenticated_inventory_page,
+                             cart_page_object,
+                             checkout_page_object):
+
+    authenticated_inventory_page.add_product_to_cart("Sauce Labs Backpack")
+    cart_page_object.open()
+    cart_page_object.checkout()
+
+    checkout_page_object.enter_first_name("Dima")
+    checkout_page_object.enter_last_name("Ivanov")
+    checkout_page_object.enter_postal_code("12345")
+    checkout_page_object.click_continue()
+
+    expect(checkout_page_object.product_name).to_have_text(
+        "Sauce Labs Backpack"
+    )
+    expect(checkout_page_object.product_price).to_have_text("$29.99")
+    expect(checkout_page_object.subtotal_price).to_have_text("Item total: $29.99")
+    expect(checkout_page_object.tax_price).to_have_text("Tax: $2.40")
+    expect(checkout_page_object.total_price).to_have_text("Total: $32.39")
+
+    checkout_page_object.click_finish_order()
+
+    expect(checkout_page_object.complete_header).to_have_text(
+        "Thank you for your order!"
+    )
+
