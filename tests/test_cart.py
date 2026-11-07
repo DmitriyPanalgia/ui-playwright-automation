@@ -1,8 +1,6 @@
 from playwright.sync_api import expect
 import pytest
 
-from tests.conftest import cart_page_object
-
 
 @pytest.mark.parametrize(
     "product_names",
