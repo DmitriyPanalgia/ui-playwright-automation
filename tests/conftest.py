@@ -9,7 +9,7 @@ from pages.checkout_page import CheckoutPage
 
 @pytest.fixture
 def open_app(page: Page):
-    page.goto(BASE_URL)
+    page.goto(BASE_URL, wait_until="domcontentloaded")
     return page
 
 
