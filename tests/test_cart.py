@@ -1,7 +1,11 @@
 from playwright.sync_api import expect
 import pytest
+import allure
 
 
+@allure.feature("Корзина")
+@allure.story("Добавление товаров")
+@allure.title("Добавление одного или нескольких товаров в корзину")
 @pytest.mark.parametrize(
     "product_names",
     [
@@ -27,6 +31,9 @@ def test_add_products_to_cart(authenticated_inventory_page,
     expect(cart_page_object.cart_items).to_have_count(len(product_names))
 
 
+@allure.feature("Корзина")
+@allure.story("Удаление товаров")
+@allure.title("Удаление одного товара из корзины")
 def test_remove_product_from_cart(authenticated_inventory_page,
                                   cart_page_object,):
 
@@ -41,6 +48,9 @@ def test_remove_product_from_cart(authenticated_inventory_page,
     expect(cart_page_object.cart_items).to_have_count(1)
 
 
+@allure.feature("Корзина")
+@allure.story("Удаление товаров")
+@allure.title("Удаление последнего товара из корзины")
 def test_remove_last_product_from_cart(authenticated_inventory_page,
                                        cart_page_object,):
 

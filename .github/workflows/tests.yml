@@ -28,4 +28,12 @@ jobs:
         run: python -m playwright install --with-deps chromium
 
       - name: Run tests
-        run: python -m pytest -v
+        run: python -m pytest -v --alluredir=allure-results --clean-alluredir
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results/
+          retention-days: 14

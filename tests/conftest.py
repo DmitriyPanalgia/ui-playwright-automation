@@ -1,3 +1,4 @@
+import allure
 import pytest
 from playwright.sync_api import Page, expect
 from config import BASE_URL
@@ -5,7 +6,6 @@ from pages.cart_page import CartPage
 from pages.login_page import LoginPage
 from pages.inventory_page import InventoryPage
 from pages.checkout_page import CheckoutPage
-
 
 @pytest.fixture
 def open_app(page: Page):
@@ -44,3 +44,19 @@ def cart_page_object(authenticated_inventory_page):
 @pytest.fixture
 def checkout_page_object(cart_page_object):
     return CheckoutPage(cart_page_object.page)
+
+
+def pytest_itemcollected(item):
+    file_suites = {
+        "test_home_page.py": "Главная страница",
+        "test_login.py": "Авторизация",
+        "test_cart.py": "Корзина",
+        "test_checkout.py": "Оформление заказа"
+    }
+
+    file_name = item.path.name
+
+    if file_name in file_suites:
+        item.add_marker(
+            allure.suite(file_suites[file_name])
+        )

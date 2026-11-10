@@ -1,8 +1,11 @@
 from playwright.sync_api import expect
 import pytest
+import allure
 
 
-
+@allure.feature("Оформление заказа")
+@allure.story("Отображение формы")
+@allure.title("Отображение полей оформления заказа")
 def test_checkout_form_visible(authenticated_inventory_page,
                                cart_page_object,
                                checkout_page_object):
@@ -17,12 +20,20 @@ def test_checkout_form_visible(authenticated_inventory_page,
     expect(checkout_page_object.postal_code).to_be_visible()
 
 
+@allure.feature("Оформление заказа")
+@allure.story("Валидация обязательных полей")
+@allure.title("Проверка обязательных полей оформления заказа")
 @pytest.mark.parametrize(
     "first_name, last_name, postal_code, expected_error_message",
     [
         ("","Ivanov","12345","Error: First Name is required"),
         ("Dima", "", "12345", "Error: Last Name is required"),
         ("Dima", "Ivanov", "", "Error: Postal Code is required")
+    ],
+    ids= [
+        "Пустое имя",
+        "Пустая фамилия",
+        "Пустой почтовый индекс"
     ]
 )
 def test_checkout_required_fields_validation(authenticated_inventory_page,
@@ -45,6 +56,9 @@ def test_checkout_required_fields_validation(authenticated_inventory_page,
     expect(checkout_page_object.get_error_message()).to_have_text(expected_error_message)
 
 
+@allure.feature("Оформление заказа")
+@allure.story("Успешное оформление заказа")
+@allure.title("Успешное оформление заказа с проверкой стоимости")
 def test_successful_checkout(authenticated_inventory_page,
                              cart_page_object,
                              checkout_page_object):
